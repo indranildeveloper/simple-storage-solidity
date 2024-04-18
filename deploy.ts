@@ -7,8 +7,8 @@ config();
 async function main() {
     // http://127.0.0.1:7545
 
-    const provider = new JsonRpcProvider(process.env.RPC_URL);
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    const provider = new JsonRpcProvider(process.env.RPC_URL!);
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
     // const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
     // let wallet = ethers.Wallet.fromEncryptedJsonSync(
     //   encryptedJson,
@@ -29,7 +29,7 @@ async function main() {
     const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
     console.log("Deploying, please wait...");
     const contract = await contractFactory.deploy();
-    const deploymentReceipt = await contract.deploymentTransaction().wait(1);
+    const deploymentReceipt = await contract.waitForDeployment();
 
     console.log(`Contract Address: ${await contract.getAddress()}`);
 
@@ -57,14 +57,16 @@ async function main() {
     // await sentTxResponse.wait(1);
     // console.log(sentTxResponse);
 
+    // @ts-ignore
     const currentFavoutiteNumber = await contract.retrieve();
     console.log(
         `Current favourite number: ${currentFavoutiteNumber.toString()}`,
     );
 
+    // @ts-ignore
     const transactionResponse = await contract.store("7");
     const transactionReceipt = await transactionResponse.wait(1);
-
+    // @ts-ignore
     const updatedFavouriteNumber = await contract.retrieve();
     // console.log(transactionReceipt);
     console.log("-----------------------------------------------------------");
